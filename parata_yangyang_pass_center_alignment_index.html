@@ -1,0 +1,1493 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Parata Yangyang Pass - 파라타 양양 패스</title>
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- FontAwesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&family=Noto+Sans+KR:wght@400;500;700;900&display=swap" rel="stylesheet">
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            parata: {
+              blue: '#0B57D0',
+              darkBlue: '#0037A5',
+              sky: '#E8F0FE',
+              lightSky: '#F0F5FF',
+            },
+            yangyang: {
+              sun: '#FF9E00',
+              orange: '#FF6B00',
+              yellow: '#FFD000',
+            }
+          },
+          fontFamily: {
+            sans: ['Plus Jakarta Sans', 'Noto Sans KR', 'sans-serif'],
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    /* Force absolute centered layout in preview canvas iframe */
+    html, body {
+      display: flex !important;
+      justify-content: center !important;
+      align-items: center !important;
+      width: 100% !important;
+      min-height: 100vh !important;
+      min-height: 100dvh !important;
+      margin: 0 auto !important;
+      padding: 0 !important;
+      background-color: #0f172a !important; /* slate-900 */
+    }
+
+    /* Custom Scrollbar hide for clean mobile look */
+    .no-scrollbar::-webkit-scrollbar {
+      display: none;
+    }
+    .no-scrollbar {
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+    }
+    
+    /* Animation effects */
+    @keyframes pulseGlow {
+      0%, 100% { transform: scale(1); filter: drop-shadow(0 0 8px rgba(11, 87, 208, 0.4)); }
+      50% { transform: scale(1.05); filter: drop-shadow(0 0 16px rgba(255, 158, 0, 0.7)); }
+    }
+    .animate-glow {
+      animation: pulseGlow 3s infinite ease-in-out;
+    }
+
+    @keyframes float {
+      0%, 100% { transform: translateY(0px); }
+      50% { transform: translateY(-8px); }
+    }
+    .animate-float {
+      animation: float 2.5s infinite ease-in-out;
+    }
+    
+    .stamp-badge {
+      transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+    .stamp-badge.collected {
+      transform: scale(1.05) rotate(-3deg);
+    }
+  </style>
+</head>
+<body class="bg-slate-900 font-sans text-slate-800 antialiased selection:bg-parata-blue selection:text-white">
+
+  <!-- Mobile Viewport Outer Container (Guaranteed Center Alignment) -->
+  <div class="w-full max-w-[390px] h-[100dvh] md:h-[844px] bg-slate-50 md:rounded-[44px] shadow-2xl flex flex-col overflow-hidden relative border-0 md:border-[8px] border-slate-800 flex-shrink-0" style="margin: 0 auto !important;">
+    
+    <!-- Top Status Bar & App Header -->
+    <header class="bg-gradient-to-r from-parata-blue to-parata-darkBlue text-white px-5 pt-4 pb-3 flex flex-col justify-between shadow-md relative z-20 flex-shrink-0">
+      <!-- Top Row: Logo & Language Selector -->
+      <div class="flex items-center justify-between">
+        <div class="flex items-center gap-2">
+          <!-- Parata Wings Logo Icon -->
+          <div class="w-8 h-8 bg-white/10 rounded-full flex items-center justify-center backdrop-blur-md border border-white/20">
+            <i class="fa-solid font-bold fa-plane-up text-yangyang-yellow text-base"></i>
+          </div>
+          <div>
+            <span class="font-extrabold tracking-wider text-sm text-white block leading-tight">PARATA AIR</span>
+            <span class="text-[10px] text-blue-200 tracking-wider uppercase font-semibold">Yangyang Pass</span>
+          </div>
+        </div>
+
+        <!-- Language Selector Dropdown -->
+        <div class="relative">
+          <button id="langBtn" onclick="toggleLangDropdown()" class="bg-white/15 hover:bg-white/25 px-2.5 py-1 rounded-full text-xs font-semibold flex items-center gap-1.5 transition border border-white/20">
+            <i class="fa-solid fa-globe text-yangyang-yellow"></i>
+            <span id="currentLangLabel">KO</span>
+            <i class="fa-solid fa-chevron-down text-[10px] opacity-70"></i>
+          </button>
+          
+          <div id="langDropdown" class="hidden absolute right-0 mt-2 w-28 bg-white rounded-xl shadow-xl border border-slate-100 text-slate-700 text-xs py-1 z-50">
+            <button onclick="changeLang('ko')" class="w-full px-3 py-1.5 text-left hover:bg-blue-50 font-medium flex items-center justify-between">🇰🇷 한국어 <span class="text-[10px] text-slate-400">KO</span></button>
+            <button onclick="changeLang('en')" class="w-full px-3 py-1.5 text-left hover:bg-blue-50 font-medium flex items-center justify-between">🇺🇸 English <span class="text-[10px] text-slate-400">EN</span></button>
+            <button onclick="changeLang('ja')" class="w-full px-3 py-1.5 text-left hover:bg-blue-50 font-medium flex items-center justify-between">🇯🇵 日本語 <span class="text-[10px] text-slate-400">JA</span></button>
+            <button onclick="changeLang('zh')" class="w-full px-3 py-1.5 text-left hover:bg-blue-50 font-medium flex items-center justify-between">🇨🇳 中文 <span class="text-[10px] text-slate-400">ZH</span></button>
+          </div>
+        </div>
+      </div>
+
+      <!-- User Status & Welcome Bar -->
+      <div class="mt-3 bg-white/10 rounded-xl p-2.5 backdrop-blur-md border border-white/15 flex items-center justify-between">
+        <div class="flex items-center gap-2.5">
+          <div id="userAvatar" class="w-9 h-9 rounded-full bg-yangyang-sun text-slate-900 font-bold flex items-center justify-center text-sm border-2 border-white shadow-sm">
+            <i class="fa-solid fa-user"></i>
+          </div>
+          <div>
+            <div class="text-[11px] text-blue-200" id="txtGuestNotice">입국 인증이 필요합니다</div>
+            <div class="text-xs font-bold text-white flex items-center gap-1" id="txtUserName">
+              GUEST <span id="verifiedBadge" class="hidden bg-emerald-400 text-slate-900 text-[9px] px-1.5 py-0.2 rounded-full font-bold">VERIFIED</span>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Stamp Count Badge -->
+        <div class="bg-gradient-to-r from-yangyang-yellow to-yangyang-sun px-3 py-1 rounded-full text-slate-900 font-extrabold text-xs flex items-center gap-1.5 shadow-sm">
+          <i class="fa-solid fa-stamp text-slate-900 text-xs"></i>
+          <span><span id="stampCount">0</span> / 6</span>
+        </div>
+      </div>
+    </header>
+
+    <!-- Main Dynamic Content Screens Container -->
+    <main class="flex-1 overflow-y-auto no-scrollbar relative bg-slate-50 pb-20">
+
+      <!-- ============================================ -->
+      <!-- SCREEN 1: ONBOARDING & BOARDING PASS VERIFY -->
+      <!-- ============================================ -->
+      <section id="screen-verify" class="p-5 flex flex-col justify-between min-h-full">
+        <div>
+          <!-- Haeki Mascot Welcome Banner -->
+          <div class="bg-gradient-to-br from-blue-50 via-indigo-50 to-amber-50 rounded-2xl p-4 border border-blue-100 shadow-sm relative overflow-hidden mb-5">
+            <div class="flex items-center gap-3">
+              <!-- Animated Mascot SVG Container -->
+              <div class="w-20 h-20 flex-shrink-0 bg-parata-blue rounded-2xl p-2 flex items-center justify-center shadow-md relative group">
+                <svg viewBox="0 0 100 100" class="w-full h-full animate-float">
+                  <path d="M50 5 L58 20 L72 10 L70 28 L88 28 L78 42 L95 50 L78 58 L88 72 L70 72 L72 90 L58 80 L50 95 L42 80 L28 90 L30 72 L12 72 L22 58 L5 50 L22 42 L12 28 L30 28 L28 10 L42 20 Z" fill="#FF9E00" />
+                  <circle cx="50" cy="50" r="32" fill="#FFD000"/>
+                  <circle cx="62" cy="45" r="4" fill="#1E293B"/>
+                  <path d="M32 45 Q38 38 44 45" stroke="#1E293B" stroke-width="3" fill="none" stroke-linecap="round"/>
+                  <path d="M40 58 Q50 68 60 58" stroke="#1E293B" stroke-width="3" fill="#E11D48" stroke-linecap="round"/>
+                  <path d="M22 70 Q50 82 78 70 L78 90 Q50 98 22 90 Z" fill="#0B57D0"/>
+                  <polygon points="50,75 54,80 46,80" fill="#FFD000"/>
+                </svg>
+                <div class="absolute -bottom-1 -right-1 bg-yangyang-sun text-[9px] text-slate-900 font-extrabold px-1.5 py-0.5 rounded-md border border-white">
+                  HAEKI
+                </div>
+              </div>
+
+              <div class="flex-1">
+                <div class="inline-block bg-parata-blue text-white text-[10px] font-bold px-2 py-0.5 rounded-md mb-1">
+                  OFFICIAL MASCOT
+                </div>
+                <h2 class="text-base font-extrabold text-slate-900 leading-tight" id="txtWelcomeTitle">
+                  반가워요! 양양에 오신 것을 환영합니다 ✈️
+                </h2>
+                <p class="text-xs text-slate-600 mt-1 leading-relaxed" id="txtWelcomeDesc">
+                  파라타항공 탑승권을 등록하고 무료 서핑/스키 장비 대여 및 스탬프 패스를 받으세요!
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Boarding Pass Verification Card -->
+          <div class="bg-white rounded-2xl p-5 shadow-lg border border-slate-100 relative">
+            <div class="flex items-center justify-between pb-3 border-b border-dashed border-slate-200 mb-4">
+              <span class="text-xs font-bold text-parata-blue uppercase tracking-wider flex items-center gap-1.5">
+                <i class="fa-solid fa-ticket"></i> <span id="txtPassVerifyTitle">파라타항공 탑승권 인증</span>
+              </span>
+              <span class="text-[10px] bg-blue-50 text-parata-blue font-semibold px-2 py-0.5 rounded-full">Step 1/2</span>
+            </div>
+
+            <!-- Input Mode Selector -->
+            <div class="grid grid-cols-2 gap-2 p-1 bg-slate-100 rounded-xl mb-4 text-xs font-bold">
+              <button id="btnTabPNR" onclick="switchAuthTab('pnr')" class="py-2 rounded-lg bg-white text-parata-blue shadow-sm transition">
+                <i class="fa-solid fa-keyboard mr-1"></i> PNR / 예약번호
+              </button>
+              <button id="btnTabQR" onclick="switchAuthTab('qr')" class="py-2 rounded-lg text-slate-500 hover:text-slate-800 transition">
+                <i class="fa-solid fa-qrcode mr-1"></i> QR 탑승권 스캔
+              </button>
+            </div>
+
+            <!-- PNR Form -->
+            <div id="formPNR" class="space-y-3">
+              <div>
+                <label class="block text-xs font-semibold text-slate-600 mb-1" id="lblPNR">PNR (예약번호 6자리)</label>
+                <input type="text" id="inputPNR" placeholder="예: PRT2030" value="PRT882" class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm font-bold tracking-widest text-slate-800 focus:outline-none focus:border-parata-blue uppercase transition" />
+              </div>
+              <div>
+                <label class="block text-xs font-semibold text-slate-600 mb-1" id="lblPassengerName">승객 영문 성명 (Passenger Name)</label>
+                <input type="text" id="inputName" placeholder="예: HONG GILDONG" value="KIM PARATA" class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm font-semibold text-slate-800 focus:outline-none focus:border-parata-blue uppercase transition" />
+              </div>
+              
+              <button onclick="verifyPNR()" class="w-full py-3 bg-gradient-to-r from-parata-blue to-parata-darkBlue text-white font-bold rounded-xl text-sm shadow-md hover:opacity-95 active:scale-[0.98] transition flex items-center justify-center gap-2 mt-2">
+                <i class="fa-solid fa-circle-check"></i> <span id="btnVerifyText">입국 & 웰컴 패스 활성화</span>
+              </button>
+            </div>
+
+            <!-- QR Code Scan Simulation -->
+            <div id="formQR" class="hidden text-center py-4 space-y-3">
+              <div class="w-40 h-40 mx-auto bg-slate-900 rounded-2xl flex flex-col items-center justify-center text-white relative overflow-hidden border-2 border-parata-blue">
+                <div class="w-full h-1 bg-yangyang-yellow absolute top-0 animate-bounce shadow-lg"></div>
+                <i class="fa-solid fa-qrcode text-5xl text-blue-200 mb-2"></i>
+                <span class="text-[11px] text-slate-300" id="txtScanPrompt">탑승권 QR을 카메라에 대주세요</span>
+              </div>
+              <button onclick="simulateQRScan()" class="px-5 py-2.5 bg-yangyang-sun text-slate-900 font-extrabold rounded-xl text-xs shadow hover:bg-yangyang-orange hover:text-white transition">
+                <i class="fa-solid fa-camera mr-1"></i> 시뮬레이션: QR 스캔 완료하기
+              </button>
+            </div>
+          </div>
+
+          <!-- Benefits List Preview -->
+          <div class="mt-5 space-y-2">
+            <h3 class="text-xs font-bold text-slate-500 uppercase tracking-wider px-1" id="txtPassBenefitsHeader">웰컴 패스 즉시 지급 혜택</h3>
+            <div class="grid grid-cols-2 gap-2 text-xs">
+              <div class="bg-white p-3 rounded-xl border border-slate-100 shadow-sm flex items-center gap-2.5">
+                <div class="w-8 h-8 rounded-lg bg-amber-100 text-amber-600 flex items-center justify-center text-sm font-bold">🏄‍♂️</div>
+                <div>
+                  <div class="font-bold text-slate-800" id="benefit1Title">서핑/스키 장비</div>
+                  <div class="text-[10px] text-emerald-600 font-semibold" id="benefit1Sub">무상 대여 쿠폰</div>
+                </div>
+              </div>
+              <div class="bg-white p-3 rounded-xl border border-slate-100 shadow-sm flex items-center gap-2.5">
+                <div class="w-8 h-8 rounded-lg bg-blue-100 text-parata-blue flex items-center justify-center text-sm font-bold">🛫</div>
+                <div>
+                  <div class="font-bold text-slate-800" id="benefit2Title">좌석 업그레이드</div>
+                  <div class="text-[10px] text-parata-blue font-semibold" id="benefit2Sub">파라타항공 혜택</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="text-center pt-4 text-[11px] text-slate-400">
+          Powered by Parata Air & Gangwon Yangyang Tour
+        </div>
+      </section>
+
+      <!-- ============================================ -->
+      <!-- SCREEN 2: MAIN DASHBOARD & STAMP MAP -->
+      <!-- ============================================ -->
+      <section id="screen-map" class="hidden p-4 space-y-4">
+        
+        <!-- Season Switcher Banner -->
+        <div class="bg-white rounded-2xl p-1.5 shadow-md border border-slate-200 flex items-center justify-between">
+          <button id="btnSeasonSummer" onclick="switchSeason('summer')" class="flex-1 py-2.5 rounded-xl font-extrabold text-xs flex items-center justify-center gap-2 bg-gradient-to-r from-blue-500 to-cyan-500 text-white shadow-sm transition">
+            <i class="fa-solid fa-water text-sm"></i> <span id="txtSummerTab">여름: 서핑 & 웰니스</span>
+          </button>
+          <button id="btnSeasonWinter" onclick="switchSeason('winter')" class="flex-1 py-2.5 rounded-xl font-bold text-xs flex items-center justify-center gap-2 text-slate-500 hover:text-slate-800 transition">
+            <i class="fa-solid fa-snowflake text-sm"></i> <span id="txtWinterTab">겨울: 스노보드 & 스키</span>
+          </button>
+        </div>
+
+        <!-- Mascot Guidance Header -->
+        <div class="bg-gradient-to-r from-parata-blue to-slate-900 rounded-2xl p-3.5 text-white shadow-lg flex items-center justify-between">
+          <div class="flex items-center gap-3">
+            <div class="w-12 h-12 bg-yangyang-yellow rounded-xl flex items-center justify-center text-2xl shadow-inner overflow-hidden border border-white">
+              <span id="mascotSeasonEmoji">🏄‍♂️</span>
+            </div>
+            <div>
+              <div class="text-xs font-bold text-yangyang-yellow" id="txtMascotStatus">해키 가이드와 함께 스탬프 수집!</div>
+              <div class="text-[11px] text-slate-200" id="txtMascotGuideSub">스팟을 클릭하면 상세 정보를 확인하고 스탬프를 받아요</div>
+            </div>
+          </div>
+          <button onclick="triggerQuickCheckin()" class="px-3 py-1.5 bg-yangyang-sun text-slate-900 font-extrabold text-xs rounded-lg shadow hover:bg-yangyang-yellow transition active:scale-95">
+            <i class="fa-solid fa-location-crosshairs mr-1"></i> <span id="btnGPSCheck">GPS 체크인</span>
+          </button>
+        </div>
+
+        <!-- Interactive Stamp Challenge Map Component -->
+        <div class="bg-slate-800 rounded-2xl p-4 shadow-xl text-white relative overflow-hidden border border-slate-700">
+          <div class="flex items-center justify-between mb-3">
+            <span class="text-xs font-bold text-blue-300 uppercase tracking-wider flex items-center gap-1.5">
+              <i class="fa-solid fa-map-location-dot"></i> <span id="txtMapTitle">강원 챌린지 맵 (Gangwon Map)</span>
+            </span>
+            <span class="text-[10px] bg-slate-700 text-slate-300 px-2 py-0.5 rounded-md">Yangyang Hub</span>
+          </div>
+
+          <!-- Stylized Map Canvas Area -->
+          <div class="relative w-full min-h-[260px] bg-gradient-to-b from-sky-900 via-blue-950 to-slate-900 rounded-xl overflow-hidden border border-blue-900/50 p-2">
+            <div class="absolute inset-0 opacity-20 pointer-events-none">
+              <svg class="w-full h-full" viewBox="0 0 100 100" preserveAspectRatio="none">
+                <path d="M 0 20 Q 30 10 50 40 T 100 30 L 100 100 L 0 100 Z" fill="#0B57D0" />
+                <path d="M 0 50 Q 40 40 70 80 T 100 90 L 100 100 L 0 100 Z" fill="#FF9E00" />
+              </svg>
+            </div>
+
+            <!-- Map Location Markers Grid -->
+            <div id="mapMarkersContainer" class="relative z-10 h-full flex flex-col gap-2 py-1">
+              <!-- Dynamically populated via JavaScript -->
+            </div>
+          </div>
+        </div>
+
+        <!-- Stamp Progress Badge Grid -->
+        <div>
+          <div class="flex items-center justify-between mb-2">
+            <h3 class="text-xs font-extrabold text-slate-700 uppercase tracking-wider" id="txtStampCollectionTitle">스탬프 컬렉션 현황</h3>
+            <span class="text-[11px] font-bold text-parata-blue" id="txtStampRewardNotice">3개 모으면 파라타 마일리지 증정!</span>
+          </div>
+
+          <div id="stampBadgesGrid" class="grid grid-cols-3 gap-2.5">
+            <!-- Dynamically populated stamps -->
+          </div>
+        </div>
+
+      </section>
+
+      <!-- ============================================ -->
+      <!-- NEW SCREEN: TRAVEL GUIDE (종합 관광 정보) -->
+      <!-- ============================================ -->
+      <section id="screen-travel" class="hidden p-4 space-y-4">
+        <!-- Banner Header -->
+        <div class="bg-gradient-to-r from-blue-600 to-indigo-700 rounded-2xl p-4 text-white shadow-lg flex items-center justify-between">
+          <div>
+            <span class="text-[10px] bg-white/20 font-bold px-2 py-0.5 rounded-full uppercase tracking-wider">SMART TRAVEL GUIDE</span>
+            <h2 class="text-base font-extrabold mt-1" id="txtTravelBannerTitle">양양 & 강원 종합 관광 가이드</h2>
+            <p class="text-xs text-blue-100" id="txtTravelBannerSub">렌트카, 숙소, 로컬 맛집부터 특산품까지 한눈에!</p>
+          </div>
+          <div class="text-3xl text-blue-200">
+            <i class="fa-solid fa-compass"></i>
+          </div>
+        </div>
+
+        <!-- Travel Category Filter Buttons -->
+        <div class="grid grid-cols-3 gap-1.5 text-center text-[11px] font-bold">
+          <button onclick="filterTravel('all')" id="travelCat-all" class="py-2 bg-parata-blue text-white rounded-xl shadow-sm transition">전체</button>
+          <button onclick="filterTravel('car')" id="travelCat-car" class="py-2 bg-white text-slate-600 rounded-xl border border-slate-200 hover:bg-slate-50 transition">🚗 렌트/교통</button>
+          <button onclick="filterTravel('stay')" id="travelCat-stay" class="py-2 bg-white text-slate-600 rounded-xl border border-slate-200 hover:bg-slate-50 transition">🏨 숙소/리조트</button>
+          <button onclick="filterTravel('food')" id="travelCat-food" class="py-2 bg-white text-slate-600 rounded-xl border border-slate-200 hover:bg-slate-50 transition">🍽️ 맛집·카페</button>
+          <button onclick="filterTravel('market')" id="travelCat-market" class="py-2 bg-white text-slate-600 rounded-xl border border-slate-200 hover:bg-slate-50 transition">🛍️ 시장/굿즈</button>
+          <button onclick="filterTravel('culture')" id="travelCat-culture" class="py-2 bg-white text-slate-600 rounded-xl border border-slate-200 hover:bg-slate-50 transition">🌿 힐링/문화</button>
+        </div>
+
+        <!-- Travel Items Container -->
+        <div id="travelListContainer" class="space-y-3">
+          <!-- Dynamically populated travel guide items -->
+        </div>
+      </section>
+
+      <!-- ============================================ -->
+      <!-- SCREEN 3: REWARDS & COUPON BOX -->
+      <!-- ============================================ -->
+      <section id="screen-rewards" class="hidden p-4 space-y-4">
+        <!-- Header -->
+        <div class="bg-gradient-to-r from-amber-500 to-yangyang-orange rounded-2xl p-4 text-white shadow-lg flex items-center justify-between">
+          <div>
+            <span class="text-[10px] bg-white/20 font-bold px-2 py-0.5 rounded-full uppercase tracking-wider">VIP BENEFIT PASS</span>
+            <h2 class="text-base font-extrabold mt-1" id="txtRewardsBannerTitle">혜택 & 쿠폰함</h2>
+            <p class="text-xs text-amber-100" id="txtRewardsBannerSub">양양 제휴 샵 및 공항에서 QR 코드를 제시하세요</p>
+          </div>
+          <div class="text-3xl text-amber-100">
+            <i class="fa-solid fa-ticket animate-bounce"></i>
+          </div>
+        </div>
+
+        <!-- Active Coupon Tickets List -->
+        <div id="couponsListContainer" class="space-y-3">
+          <!-- Dynamically Populated Coupons -->
+        </div>
+      </section>
+
+      <!-- ============================================ -->
+      <!-- SCREEN 4: VIRAL REWARD & INVITE FRIEND (MGM) -->
+      <!-- ============================================ -->
+      <section id="screen-viral" class="hidden p-4 space-y-4">
+        <!-- MGM Banner -->
+        <div class="bg-gradient-to-br from-indigo-900 via-parata-blue to-blue-800 rounded-2xl p-5 text-white shadow-xl relative overflow-hidden">
+          <div class="relative z-10">
+            <span class="bg-yangyang-yellow text-slate-900 text-[10px] font-black px-2.5 py-0.5 rounded-full uppercase tracking-wider">MGM VIRAL PASS</span>
+            <h2 class="text-lg font-black mt-2 leading-tight" id="txtViralTitle">친구 초대하고 프리미엄 혜택 선물하기!</h2>
+            <p class="text-xs text-blue-100 mt-1.5 leading-relaxed" id="txtViralDesc">
+              모은 스탬프 포인트를 친구에게 '강원 특산물 기내식 무료 쿠폰' 또는 '양양공항 패스트트랙 Pass'로 전송하세요!
+            </p>
+          </div>
+          <div class="absolute -right-2 -bottom-4 text-7xl opacity-20 pointer-events-none">
+            ✈️
+          </div>
+        </div>
+
+        <!-- Featured Friend Gift Options -->
+        <div class="space-y-2">
+          <h3 class="text-xs font-bold text-slate-700 uppercase tracking-wider px-1" id="txtGiftSelectTitle">친구에게 선물할 프리미엄 혜택 선택</h3>
+          <div class="grid grid-cols-2 gap-2 text-xs">
+            <div onclick="selectGiftOption('meal')" id="giftOpt-meal" class="bg-white p-3 rounded-2xl border-2 border-parata-blue shadow-sm flex flex-col justify-between cursor-pointer">
+              <div class="flex items-center gap-2">
+                <span class="text-2xl">🍱</span>
+                <div>
+                  <div class="font-bold text-slate-900" id="txtGiftMealTitle">강원 특산물 기내식</div>
+                  <div class="text-[10px] text-parata-blue font-semibold" id="txtGiftMealSub">무료 제공 쿠폰</div>
+                </div>
+              </div>
+              <div class="mt-2 text-[10px] text-slate-500" id="txtGiftMealDesc">양양 곤드레 밥 / 강원 감자 뇨끼 기내식 선택 가능</div>
+            </div>
+
+            <div onclick="selectGiftOption('fasttrack')" id="giftOpt-fasttrack" class="bg-white p-3 rounded-2xl border border-slate-200 shadow-sm flex flex-col justify-between cursor-pointer hover:border-parata-blue">
+              <div class="flex items-center gap-2">
+                <span class="text-2xl">⚡</span>
+                <div>
+                  <div class="font-bold text-slate-900" id="txtGiftFastTitle">양양공항 패스트트랙</div>
+                  <div class="text-[10px] text-amber-600 font-semibold" id="txtGiftFastSub">우선 입출국 심사권</div>
+                </div>
+              </div>
+              <div class="mt-2 text-[10px] text-slate-500" id="txtGiftFastDesc">양양공항 대기 없이 보안검색 & 입출국 전용라인 이용</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Invitation Link Generator Box -->
+        <div class="bg-white rounded-2xl p-4 shadow-md border border-slate-100 space-y-3">
+          <h3 class="text-xs font-bold text-slate-700 uppercase tracking-wider" id="txtMyInviteCodeTitle">나의 전용 친구초대 코드</h3>
+          
+          <div class="flex items-center gap-2 bg-slate-100 p-2.5 rounded-xl border border-slate-200">
+            <input type="text" id="inviteCodeInput" readonly value="https://yangyang-pass.parata.com/invite?code=HAEKI2030" class="bg-transparent text-xs font-bold text-slate-800 w-full focus:outline-none" />
+            <button onclick="copyInviteLink()" class="px-3 py-1.5 bg-parata-blue text-white font-bold text-xs rounded-lg shadow hover:bg-parata-darkBlue active:scale-95 transition flex-shrink-0">
+              <i class="fa-solid fa-copy mr-1"></i> <span id="btnCopyCode">복사</span>
+            </button>
+          </div>
+
+          <!-- Direct Share Buttons -->
+          <div class="grid grid-cols-3 gap-2 pt-1 text-xs">
+            <button onclick="shareSocial('kakao')" class="py-2.5 bg-amber-300 text-slate-900 font-bold rounded-xl flex items-center justify-center gap-1.5 hover:bg-amber-400 transition">
+              <i class="fa-solid fa-comment"></i> <span id="btnShareKakao">카카오톡</span>
+            </button>
+            <button onclick="shareSocial('insta')" class="py-2.5 bg-pink-500 text-white font-bold rounded-xl flex items-center justify-center gap-1.5 hover:bg-pink-600 transition">
+              <i class="fa-brands fa-instagram"></i> <span id="btnShareInsta">인스타그램</span>
+            </button>
+            <button onclick="shareSocial('global')" class="py-2.5 bg-slate-800 text-white font-bold rounded-xl flex items-center justify-center gap-1.5 hover:bg-slate-900 transition">
+              <i class="fa-solid fa-share-nodes"></i> <span id="btnShareMore">공유하기</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Invited Friends Status List -->
+        <div class="bg-white rounded-2xl p-4 shadow-md border border-slate-100">
+          <div class="flex items-center justify-between mb-3">
+            <h3 class="text-xs font-extrabold text-slate-800" id="txtInviteStatusTitle">내가 초대한 친구 목록</h3>
+            <span class="text-xs font-bold text-parata-blue">보너스 적립: <span id="bonusPointCount">20,000</span>P</span>
+          </div>
+
+          <div class="space-y-2 text-xs">
+            <div class="flex items-center justify-between p-2.5 bg-slate-50 rounded-xl">
+              <div class="flex items-center gap-2">
+                <div class="w-7 h-7 rounded-full bg-blue-100 text-parata-blue font-bold flex items-center justify-center text-xs">Alex</div>
+                <div>
+                  <div class="font-bold text-slate-800">Alex Johnson (USA)</div>
+                  <div class="text-[10px] text-slate-400">2026.10.15 특산물 기내식 전송 완료</div>
+                </div>
+              </div>
+              <span class="bg-emerald-100 text-emerald-800 font-bold text-[10px] px-2 py-0.5 rounded-full">전송 완료</span>
+            </div>
+
+            <div class="flex items-center justify-between p-2.5 bg-slate-50 rounded-xl">
+              <div class="flex items-center gap-2">
+                <div class="w-7 h-7 rounded-full bg-amber-100 text-yangyang-orange font-bold flex items-center justify-center text-xs">Ken</div>
+                <div>
+                  <div class="font-bold text-slate-800">Kenji Tanaka (JPN)</div>
+                  <div class="text-[10px] text-slate-400">2026.10.22 패스트트랙 Pass 전송 완료</div>
+                </div>
+              </div>
+              <span class="bg-emerald-100 text-emerald-800 font-bold text-[10px] px-2 py-0.5 rounded-full">전송 완료</span>
+            </div>
+          </div>
+        </div>
+
+      </section>
+
+    </main>
+
+    <!-- Bottom Navigation Bar (Updated with Travel Tab) -->
+    <nav class="bg-white border-t border-slate-200 px-2 py-2 flex items-center justify-around absolute bottom-0 left-0 right-0 z-30 flex-shrink-0">
+      <button onclick="navTo('verify')" id="nav-verify" class="flex flex-col items-center gap-0.5 text-parata-blue transition">
+        <i class="fa-solid fa-id-card text-base"></i>
+        <span class="text-[9px] font-bold" id="navTxtVerify">인증/패스</span>
+      </button>
+
+      <button onclick="navTo('map')" id="nav-map" class="flex flex-col items-center gap-0.5 text-slate-400 hover:text-slate-700 transition">
+        <i class="fa-solid fa-map-marked-alt text-base"></i>
+        <span class="text-[9px] font-bold" id="navTxtMap">스탬프맵</span>
+      </button>
+
+      <!-- New Travel Guide Tab -->
+      <button onclick="navTo('travel')" id="nav-travel" class="flex flex-col items-center gap-0.5 text-slate-400 hover:text-slate-700 transition">
+        <i class="fa-solid fa-compass text-base"></i>
+        <span class="text-[9px] font-bold" id="navTxtTravel">관광가이드</span>
+      </button>
+
+      <button onclick="navTo('rewards')" id="nav-rewards" class="flex flex-col items-center gap-0.5 text-slate-400 hover:text-slate-700 transition relative">
+        <i class="fa-solid fa-ticket text-base"></i>
+        <span class="text-[9px] font-bold" id="navTxtRewards">쿠폰함</span>
+        <span class="absolute top-0 right-1.5 w-2 h-2 bg-yangyang-sun rounded-full"></span>
+      </button>
+
+      <button onclick="navTo('viral')" id="nav-viral" class="flex flex-col items-center gap-0.5 text-slate-400 hover:text-slate-700 transition">
+        <i class="fa-solid fa-paper-plane text-base"></i>
+        <span class="text-[9px] font-bold" id="navTxtViral">친구선물</span>
+      </button>
+    </nav>
+
+    <!-- Detailed Location Spot Info Modal -->
+    <div id="spotDetailModal" class="hidden fixed inset-0 bg-slate-900/70 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+      <div class="bg-white rounded-3xl p-5 w-full max-w-xs shadow-2xl space-y-3 relative border border-slate-100">
+        <button onclick="closeSpotModal()" class="absolute top-4 right-4 text-slate-400 hover:text-slate-700 text-base">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+
+        <div class="flex items-center gap-3 border-b border-slate-100 pb-3">
+          <div id="spotModalIcon" class="w-12 h-12 bg-blue-50 text-3xl rounded-2xl flex items-center justify-center border border-blue-100">
+            🏄‍♂️
+          </div>
+          <div>
+            <h3 id="spotModalName" class="text-sm font-black text-slate-900">스팟 이름</h3>
+            <span id="spotModalLoc" class="text-[10px] text-parata-blue font-bold">위치 주소</span>
+          </div>
+        </div>
+
+        <div class="space-y-2 text-xs">
+          <div>
+            <div class="font-bold text-slate-800 text-[11px] mb-0.5">📍 지도 정보 & 설명</div>
+            <p id="spotModalDesc" class="text-slate-600 text-[11px] leading-relaxed">스팟에 대한 세부 설명이 들어갑니다.</p>
+          </div>
+
+          <div class="grid grid-cols-2 gap-2 bg-slate-50 p-2.5 rounded-xl border border-slate-100">
+            <div>
+              <div class="text-[10px] text-slate-400 font-semibold">💰 표준 이용 가격</div>
+              <div id="spotModalPrice" class="font-bold text-slate-800 text-[11px]">무료 / 제휴할인</div>
+            </div>
+            <div>
+              <div class="text-[10px] text-slate-400 font-semibold">⏰ 운영 시간</div>
+              <div id="spotModalHours" class="font-bold text-slate-800 text-[11px]">09:00 - 18:00</div>
+            </div>
+          </div>
+
+          <div class="bg-amber-50 p-2.5 rounded-xl border border-amber-200/60">
+            <div class="text-[10px] text-amber-800 font-extrabold mb-0.5">🎁 파라타 양양 패스 제휴 혜택</div>
+            <div id="spotModalBenefit" class="font-bold text-yangyang-orange text-[11px]">수트 & 보드 무료 대여</div>
+          </div>
+        </div>
+
+        <button id="btnSpotClaim" onclick="claimCurrentSpotStamp()" class="w-full py-2.5 bg-parata-blue text-white font-bold text-xs rounded-xl hover:bg-parata-darkBlue active:scale-95 transition flex items-center justify-center gap-1.5 shadow">
+          <i class="fa-solid fa-stamp"></i> <span>이 위치에서 스탬프 찍기</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- QR Code Modal Popup -->
+    <div id="qrModal" class="hidden fixed inset-0 bg-slate-900/70 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+      <div class="bg-white rounded-3xl p-6 w-full max-w-xs shadow-2xl text-center space-y-4 animate-glow">
+        <div class="flex items-center justify-between pb-2 border-b border-slate-100">
+          <span class="text-xs font-bold text-parata-blue uppercase">PARATA VIP QR</span>
+          <button onclick="closeQRModal()" class="text-slate-400 hover:text-slate-700 text-sm">
+            <i class="fa-solid fa-xmark"></i>
+          </button>
+        </div>
+
+        <h3 id="modalCouponTitle" class="text-sm font-extrabold text-slate-900">쿠폰 제목</h3>
+
+        <div class="bg-slate-900 rounded-2xl p-4 text-white space-y-3">
+          <div class="w-36 h-36 mx-auto bg-white p-2 rounded-xl flex items-center justify-center">
+            <svg class="w-full h-full text-slate-900" viewBox="0 0 100 100">
+              <rect x="10" y="10" width="25" height="25" fill="currentColor"/>
+              <rect x="65" y="10" width="25" height="25" fill="currentColor"/>
+              <rect x="10" y="65" width="25" height="25" fill="currentColor"/>
+              <rect x="15" y="15" width="15" height="15" fill="white"/>
+              <rect x="70" y="15" width="15" height="15" fill="white"/>
+              <rect x="15" y="70" width="15" height="15" fill="white"/>
+              <rect x="40" y="20" width="20" height="10" fill="currentColor"/>
+              <rect x="40" y="40" width="20" height="20" fill="currentColor"/>
+              <rect x="65" y="50" width="25" height="15" fill="currentColor"/>
+              <rect x="40" y="70" width="15" height="20" fill="currentColor"/>
+              <rect x="70" y="75" width="20" height="15" fill="currentColor"/>
+            </svg>
+          </div>
+          <div id="modalCouponCode" class="text-xs font-mono font-bold text-yangyang-yellow tracking-widest">
+            YNG-PASS-CODE
+          </div>
+        </div>
+
+        <p class="text-[11px] text-slate-500" id="txtModalInstruction">
+          제휴 상점 직원 또는 공항 카운터에 이 화면을 보여주시면 혜택이 즉시 적용됩니다.
+        </p>
+
+        <button onclick="closeQRModal()" class="w-full py-2.5 bg-slate-800 text-white font-bold text-xs rounded-xl hover:bg-slate-900 transition">
+          닫기
+        </button>
+      </div>
+    </div>
+
+    <!-- Toast Notification Popup -->
+    <div id="toast" class="hidden fixed top-20 left-1/2 -translate-x-1/2 bg-slate-900 text-white px-4 py-2.5 rounded-full text-xs font-bold shadow-2xl z-50 flex items-center gap-2 border border-slate-700">
+      <i class="fa-solid fa-circle-info text-yangyang-yellow"></i>
+      <span id="toastMsg">알림 메시지</span>
+    </div>
+
+  </div>
+
+  <!-- Updated JavaScript Code -->
+  <script>
+    // Global State Management
+    let state = {
+      lang: 'ko',
+      currentTab: 'verify',
+      verified: false,
+      userName: 'KIM PARATA',
+      season: 'summer',
+      activeSpotId: null,
+      selectedGift: 'meal',
+      stamps: {}
+    };
+
+    // Multilingual Dictionary
+    const i18n = {
+      ko: {
+        welcomeTitle: "반가워요! 양양에 오신 것을 환영합니다 ✈️",
+        welcomeDesc: "파라타항공 탑승권을 등록하고 무료 서핑/스키 장비 대여 및 스탬프 패스를 받으세요!",
+        guestNotice: "입국 인증이 필요합니다",
+        passVerifyTitle: "파라타항공 탑승권 인증",
+        btnVerifyText: "입국 & 웰컴 패스 활성화",
+        scanPrompt: "탑승권 QR을 카메라에 대주세요",
+        summerTab: "여름: 서핑 & 로컬투어",
+        winterTab: "겨울: 스노보드 & 웰니스",
+        mascotStatus: "해키 가이드와 함께 스탬프 수집!",
+        btnGPSCheck: "GPS 체크인",
+        mapTitle: "강원 챌린지 맵",
+        stampCollectionTitle: "스탬프 컬렉션 현황",
+        stampRewardNotice: "스탬프를 모으면 파라타 마일리지 증정!",
+        rewardsBannerTitle: "혜택 & 쿠폰함",
+        rewardsBannerSub: "양양 제휴 샵 및 공항에서 QR 코드를 제시하세요",
+        showQR: "QR 바코드 보기",
+        viralTitle: "친구 초대하고 프리미엄 혜택 선물하기!",
+        viralDesc: "모은 스탬프 포인트를 친구에게 '강원 특산물 기내식 무료 쿠폰' 또는 '양양공항 패스트트랙 Pass'로 전송하세요!",
+        giftSelectTitle: "친구에게 선물할 프리미엄 혜택 선택",
+        giftMealTitle: "강원 특산물 기내식",
+        giftMealSub: "무료 제공 쿠폰",
+        giftMealDesc: "양양 곤드레 밥 / 강원 감자 뇨끼 기내식 선택 가능",
+        giftFastTitle: "양양공항 패스트트랙",
+        giftFastSub: "우선 입출국 심사권",
+        giftFastDesc: "양양공항 대기 없이 보안검색 & 입출국 전용라인 이용",
+        copyBtn: "복사",
+        navVerify: "인증/패스",
+        navMap: "스탬프맵",
+        navTravel: "관광가이드",
+        navRewards: "쿠폰함",
+        navViral: "친구선물",
+        travelBannerTitle: "양양 & 강원 종합 관광 가이드",
+        travelBannerSub: "교통, 숙소, 로컬 전통시장, 맛집부터 굿즈 팝업까지 한눈에!",
+      },
+      en: {
+        welcomeTitle: "Welcome to Yangyang with Parata Air! ✈️",
+        welcomeDesc: "Register your boarding pass to unlock free surf/ski gear rentals & stamp pass!",
+        guestNotice: "Entry Verification Required",
+        passVerifyTitle: "Parata Boarding Pass Auth",
+        btnVerifyText: "Verify Entry & Activate Pass",
+        scanPrompt: "Hold Boarding Pass QR to Camera",
+        summerTab: "Summer: Surf & Local Tour",
+        winterTab: "Winter: Snow & Wellness",
+        mascotStatus: "Collect stamps with Haeki Guide!",
+        btnGPSCheck: "GPS Check-in",
+        mapTitle: "Gangwon Challenge Map",
+        stampCollectionTitle: "Stamp Collection Status",
+        stampRewardNotice: "Collect stamps for Parata Air Miles!",
+        rewardsBannerTitle: "Passes & Coupon Box",
+        rewardsBannerSub: "Present QR Code at partner shops & airport",
+        showQR: "View QR Code",
+        viralTitle: "Invite Friends & Gift Premium Passes!",
+        viralDesc: "Gift your stamp points as 'Gangwon Local In-flight Meal' or 'Yangyang Fast-Track Immigration Pass'!",
+        giftSelectTitle: "Select Premium Gift for Friend",
+        giftMealTitle: "Gangwon Specialty Meal",
+        giftMealSub: "Free In-flight Coupon",
+        giftMealDesc: "Choice of Gondre Rice or Gangwon Potato Gnocchi meal",
+        giftFastTitle: "Yangyang Fast-Track",
+        giftFastSub: "Priority Immigration Pass",
+        giftFastDesc: "Bypass queues at Yangyang Airport security & immigration lines",
+        copyBtn: "Copy",
+        navVerify: "Auth/Pass",
+        navMap: "Stamp Map",
+        navTravel: "Travel Guide",
+        navRewards: "Coupons",
+        navViral: "Invite Gift",
+        travelBannerTitle: "Yangyang & Gangwon Travel Guide",
+        travelBannerSub: "Transport, stays, traditional markets, food & pop-up goods!",
+      },
+      ja: {
+        welcomeTitle: "ようこそ！襄陽(ヤンヤン)へ歓迎します ✈️",
+        welcomeDesc: "パラタ航空の搭乗券を登録して、無料サーフィン・スキー用具レンタルとスタンプを取得！",
+        guestNotice: "入国認証が必要です",
+        passVerifyTitle: "パラタ航空搭乗券認証",
+        btnVerifyText: "入国＆ウェルカムパス有効化",
+        scanPrompt: "搭乗券QRをカメラにかざしてください",
+        summerTab: "夏: サーフィン＆ローカルツアー",
+        winterTab: "冬: スノーボード＆ウェルネス",
+        mascotStatus: "ヘキガイドと一緒にスタンプ収集！",
+        btnGPSCheck: "GPSチェックイン",
+        mapTitle: "江原(カンウォン)チャレンジマップ",
+        stampCollectionTitle: "スタンプコレクション状況",
+        stampRewardNotice: "スタンプを集めるとマイルプレゼント！",
+        rewardsBannerTitle: "特典＆クーポンボックス",
+        rewardsBannerSub: "提携ショップおよび空港でQRコードを提示してください",
+        showQR: "QRを表示",
+        viralTitle: "友達を招待してプレミアム特典をプレゼント！",
+        viralDesc: "集めたスタンプを「江原特産机内食無料券」または「襄陽空港ファストトラックPass」として送ろう！",
+        giftSelectTitle: "友達に贈るプレミアム特典を選択",
+        giftMealTitle: "江原特産机内食",
+        giftMealSub: "無料機内食クーポン",
+        giftMealDesc: "襄陽コンドゥレ飯または江原ジャガイモニョッキ選択可能",
+        giftFastTitle: "襄陽空港ファストトラック",
+        giftFastSub: "優先出入国審査パス",
+        giftFastDesc: "襄陽空港での待ち時間なしで専用レーン利用可能",
+        copyBtn: "コピー",
+        navVerify: "認証/パス",
+        navMap: "マップ",
+        navTravel: "観光ガイド",
+        navRewards: "クーポン",
+        navViral: "友達招待",
+        travelBannerTitle: "襄陽＆江原総合観光ガイド",
+        travelBannerSub: "交通、宿泊、伝統市場、グルメからグッズポップアップまで！",
+      },
+      zh: {
+        welcomeTitle: "欢迎来到襄阳！Parata Air ✈️",
+        welcomeDesc: "绑定Parata航空登机牌，即刻领取冲浪/滑雪装备免费租赁及集章Pass！",
+        guestNotice: "需要完成入境验证",
+        passVerifyTitle: "Parata航空登机牌验证",
+        btnVerifyText: "入境验证并激活Pass",
+        scanPrompt: "请将登机牌QR码对准摄像头",
+        summerTab: "夏季: 冲浪与本土游",
+        winterTab: "冬季: 滑雪与康养",
+        mascotStatus: "与Haeki吉祥物一起打卡集章！",
+        btnGPSCheck: "GPS定位打卡",
+        mapTitle: "江原道挑战地图",
+        stampCollectionTitle: "打卡印章收集进度",
+        stampRewardNotice: "集齐印章赠送航司里程！",
+        rewardsBannerTitle: "优惠券与权益箱",
+        rewardsBannerSub: "请在襄阳合作店铺及机场出示QR码",
+        showQR: "查看QR码",
+        viralTitle: "邀请好友赠送尊享权益！",
+        viralDesc: "将您收集的印章积分为好友转送'江原特产免费机内餐'或'襄阳机场快速通关Pass'！",
+        giftSelectTitle: "选择赠送给好友的尊享权益",
+        giftMealTitle: "江原道特产机内餐",
+        giftMealSub: "免费餐食体验券",
+        giftMealDesc: "可选襄阳山菜饭或江原马铃薯汤团",
+        giftFastTitle: "襄阳机场快速通关",
+        giftFastSub: "优先出入境审查Pass",
+        giftFastDesc: "无需排队，享受襄阳机场安检及出入境专线",
+        copyBtn: "复制",
+        navVerify: "验证/Pass",
+        navMap: "打卡地图",
+        navTravel: "旅游指南",
+        navRewards: "优惠券",
+        navViral: "赠送好友",
+        travelBannerTitle: "襄阳与江原道综合旅游指南",
+        travelBannerSub: "交通、住宿、传统市场、美食及周边快闪店一网打尽！",
+      }
+    };
+
+    // Location Spot Data (Expanded to 7 Summer + 7 Winter Spots)
+    const spotsData = {
+      summer: [
+        {
+          id: 'surfyy',
+          icon: '🏝️',
+          name: { ko: '양양 서피비치 (Surfyy Beach)', en: 'Surfyy Beach Yangyang', ja: 'サーフィービーチ', zh: 'Surffy海滩' },
+          loc: { ko: '강원도 양양군 현북면 하조대해안길 119', en: '119 Hajodaehaean-gil, Yangyang-gun', ja: '江原道襄陽郡県北面河趙台海岸路119', zh: '江原道襄阳郡县北面河赵台海岸路119' },
+          desc: {
+            ko: '이국적인 휴양지 분위기의 대한민국 대표 전용 서핑 해변. 펍, 비치 햄버거, 썬베드 존 완비.',
+            en: 'Korea’s famous private surf beach with exotic tropical vibes, beach pubs & lounges.',
+            ja: '異国情緒あふれる大人気のプライベートサーフビーチ。パブやラウンジ完備。',
+            zh: '充满异国风情的韩国代表性专属冲浪海滩，配有海滩酒吧与休息区。'
+          },
+          price: { ko: '서핑 강습 50,000원 / 패들보드 30,000원', en: 'Lesson: ₩50,000 / SUP: ₩30,000', ja: '講習 50,000ウォン / SUP 30,000ウォン', zh: '课程 50,000韩元 / 桨板 30,000韩元' },
+          hours: { ko: '09:00 - 24:00 (Sunset Bar 운영)', en: '09:00 - 24:00 (Sunset Bar)', ja: '09:00 - 24:00 (サンセットバー)', zh: '09:00 - 24:00 (落日酒吧)' },
+          benefit: { ko: '파라타 패스 전용 썬베드 무상 이용 & 웰컴 음료 1잔', en: 'Free Sunbed Access & Welcome Drink with Pass', ja: 'サンベット無料利用＆ウェルカムドリンク', zh: '出示Pass免费使用沙滩椅并获赠欢迎饮品1杯' }
+        },
+        {
+          id: 'jugdo',
+          icon: '🏄‍♂️',
+          name: { ko: '죽도 해변 (Jugdo Surfer Street)', en: 'Jugdo Surfer Street', ja: '竹島(チュクド)サーファー通り', zh: '竹岛冲浪街' },
+          loc: { ko: '강원도 양양군 현남면 죽도해변길 20', en: '20 Jugdohaebyeon-gil, Yangyang-gun', ja: '江原道襄陽郡県南面竹島海岸路20', zh: '江原道襄阳郡县南面竹岛海滩路20' },
+          desc: {
+            ko: '양양 서핑의 원조! 수트/보드 렌탈 샵과 로컬 분위기의 스트릿 푸드가 모여 있는 거리.',
+            en: 'The original surf hub of Yangyang with rental shops, cafes & street food.',
+            ja: '襄陽サーフィンの元祖！用具ショップやローカルフードが集まる街。',
+            zh: '襄阳冲浪发源地，拥有丰富装备店与当地特色街头美食。'
+          },
+          price: { ko: '수트+보드 1일 35,000원', en: 'Suit+Board Day: ₩35,000', ja: 'スーツ+ボード1日 35,000ウォン', zh: '防寒服+冲浪板1天 35,000韩元' },
+          hours: { ko: '08:00 - 20:00 (연중무휴)', en: '08:00 - 20:00 (Daily)', ja: '08:00 - 20:00 (年中無休)', zh: '08:00 - 20:00 (全年无休)' },
+          benefit: { ko: '서핑 수트 & 보드 1일 완전 무료 대여 쿠폰', en: 'Free Wetsuit & Board 1-Day Rental Pass', ja: 'スーツ＆ボード1日完全無料レンタル', zh: '防寒服与冲浪板1天全额免费体验Pass' }
+        },
+        {
+          id: 'yy_market',
+          icon: '🛍️',
+          name: { ko: '양양 전통시장 (Yangyang Traditional Market)', en: 'Yangyang Traditional Market', ja: '襄陽(ヤンヤン)伝統市場', zh: '襄阳传统市场' },
+          loc: { ko: '강원도 양양군 양양읍 남문5길 9', en: '9 Nammun 5-gil, Yangyang-eup', ja: '江原道襄陽郡襄陽邑南門5路9', zh: '江原道襄阳郡襄阳邑南门5路9' },
+          desc: {
+            ko: '양양 5일장(4, 9일)과 송이/연어 특산물, 닭강정, 감자옹심이를 맛볼 수 있는 로컬 활력 시장.',
+            en: 'Historic market famous for Songi mushrooms, salmon, fried chicken & potato potato gnocchi.',
+            ja: '松茸、サケ、タッカンジョン、ジャガイモ料理を楽しめる伝統市場。',
+            zh: '历史悠久的传统市场，以松茸、三文鱼、炸鸡块及土豆汤团闻名。'
+          },
+          price: { ko: '로컬 먹거리 5,000원 ~ 15,000원', en: 'Local food: ₩5,000 - ₩15,000', ja: 'ローカルフード 5,000〜15,000ウォン', zh: '当地小吃 5,000 ~ 15,000韩元' },
+          hours: { ko: '09:00 - 19:00', en: '09:00 - 19:00', ja: '09:00 - 19:00', zh: '09:00 - 19:00' },
+          benefit: { ko: '스탬프 적립 시 시장 5,000원 바우처 & 해키 굿즈 증정', en: '₩5,000 Market Voucher & Haeki Goods', ja: '5,000ウォン市場商品券＆ヘキグッズ進呈', zh: '打卡赠送5,000韩元传统市场代金券及Haeki周边' }
+        },
+        {
+          id: 'naksan',
+          icon: '🛕',
+          name: { ko: '낙산사 & 해수관음상 (Naksansa Temple)', en: 'Naksansa Temple Wellness Walk', ja: '洛山寺(ナクサンサ)海水観音像', zh: '洛山寺与海水观音像' },
+          loc: { ko: '강원도 양양군 강현면 낙산사로 100', en: '100 Naksansa-ro, Kanghyeon-myeon', ja: '江原道襄陽郡降峴面洛山寺路100', zh: '江原道襄阳郡降岘面洛山寺路100' },
+          desc: {
+            ko: '동해 바다가 시원하게 내려다보이는 신라 시대 천년고찰. 해수관음상 힐링 산책 코스.',
+            en: 'Historic Temple built in 671 AD with panoramic ocean views and massive Avalokitesvara statue.',
+            ja: '東海を望む千年の古刹。巨大海水観音像と癒しの散策コース。',
+            zh: '建于公元671年的千年古刹，俯瞰东海壮丽全景，享有盛名的观音像散步路。'
+          },
+          price: { ko: '입장료 무료 (주차료 4,000원)', en: 'Free Entry (Parking: ₩4,000)', ja: '入場料無料 (駐車場 4,000ウォン)', zh: '免费门票 (停车费 4,000韩元)' },
+          hours: { ko: '06:00 - 18:30', en: '06:00 - 18:30', ja: '06:00 - 18:30', zh: '06:00 - 18:30' },
+          benefit: { ko: '낙산 산사 다도 체험 50% 할인 & 템플 엽서 증정', en: '50% Off Temple Tea Ceremony & Postcard', ja: '茶道体験50%割引＆絵はがきプレゼント', zh: '茶道体验半价优惠并赠送寺庙明信片' }
+        },
+        {
+          id: 'ingu',
+          icon: '🍻',
+          name: { ko: '인구 해변 (Ingu Pub & Night)', en: 'Ingu Beach Pub & Night', ja: '仁丘(イング)パブ＆ナイト', zh: '仁丘夜生活与酒吧街' },
+          loc: { ko: '강원도 양양군 현남면 인구길 58', en: '58 Ingu-gil, Hyeonnam-myeon', ja: '江原道襄陽郡県南面仁丘路58', zh: '江原道襄阳郡县南面仁丘路58' },
+          desc: {
+            ko: '서핑 후 즐기는 수제맥주 브루어리, 디제잉 파티, 로컬 펍이 즐비한 양양의 밤거리.',
+            en: 'Vibrant nightlife area packed with craft breweries, DJ beach parties & pubs.',
+            ja: 'クラフトビール、DJパーティー、ローカルパブが揃う夜のホットスポット。',
+            zh: '冲浪结束后的夜生活聚集地，包含精酿啤酒厂、DJ派对与夜间酒吧。'
+          },
+          price: { ko: '수제맥주 7,000원 ~ 12,000원', en: 'Craft beer: ₩7,000 - ₩12,000', ja: 'クラフトビール 7,000〜12,000ウォン', zh: '精酿啤酒 7,000 ~ 12,000韩元' },
+          hours: { ko: '17:00 - 02:00', en: '17:00 - 02:00', ja: '17:00 - 02:00', zh: '17:00 - 02:00' },
+          benefit: { ko: '제휴 펍 수제맥주 샘플러 1잔 무료 제공', en: 'Free Craft Beer Sampler 1 Glass', ja: '提携パブにてクラフトビール試飲1杯無料', zh: '在合作酒吧免费品尝精酿啤酒1杯' }
+        },
+        {
+          id: 'namae',
+          icon: '⛵',
+          name: { ko: '남애항 스카이워크 (Namae Port)', en: 'Namae Port Skywalk', ja: '南涯(ナmae)港スカイウォーク', zh: '南涯港天空步道' },
+          loc: { ko: '강원도 양양군 현남면 매바위길 138', en: '138 Maebawi-gil, Hyeonnam-myeon', ja: '江原道襄陽郡県南面鷹岩路138', zh: '江原道襄阳郡县南面鹰岩路138' },
+          desc: {
+            ko: '강원도 3대 미항 남애항. 투명 유리 바닥 스카이워크에서 보는 에메랄드빛 에메랄드 해안.',
+            en: 'One of Gangwon’s top 3 beautiful ports with a glass-bottom skywalk observation deck.',
+            ja: '江原道3大美港。ガラス張りのスカイウォークから絶景を堪能。',
+            zh: '江原道三大最美港口之一，设有透明玻璃天空步道可远眺璀璨海岸线。'
+          },
+          price: { ko: '무료 관람', en: 'Free Entry', ja: '観覧無料', zh: '免费参观' },
+          hours: { ko: '09:00 - 18:00', en: '09:00 - 18:00', ja: '09:00 - 18:00', zh: '09:00 - 18:00' },
+          benefit: { ko: '남애항 해산물 타운 10% 할인 쿠폰', en: '10% Off Seafood Town Voucher', ja: '海鮮タウン10%割引クーポン', zh: '海鲜老街用餐享9折优惠券' }
+        },
+        {
+          id: 'osaek',
+          icon: '♨️',
+          name: { ko: '오색약수 & 탄산온천 (Osaek Mineral Hot Spring)', en: 'Osaek Mineral Hot Spring', ja: '五色(オセク)炭酸温泉', zh: '五色矿泉与碳酸温泉' },
+          loc: { ko: '강원도 양양군 서면 오색리 산 122', en: 'Osaek-ri, Seo-myeon, Yangyang-gun', ja: '江原道襄陽郡西面五色里山122', zh: '江原道襄阳郡西面五色里山122' },
+          desc: {
+            ko: '설악산 주전골 자락의 천연 톡 쏘는 탄산온천과 신경통에 특효인 오색약수 웰니스 스파.',
+            en: 'Natural fizzy carbonated mineral hot spring at Seoraksan Mountain foothill.',
+            ja: '雪岳山麓にある天然炭酸温泉。疲労回復に効果的なスパリ絶景。',
+            zh: '位于雪岳山脚下的天然碳酸温泉，富含矿物质，极致放松身心。'
+          },
+          price: { ko: '온천 입욕 14,000원', en: 'Hot Spring Entry: ₩14,000', ja: '温泉入浴 14,000ウォン', zh: '温泉门票 14,000韩元' },
+          hours: { ko: '06:00 - 21:00', en: '06:00 - 21:00', ja: '06:00 - 21:00', zh: '06:00 - 21:00' },
+          benefit: { ko: '파라타 패스 제시 시 온천 입욕료 30% 할인', en: '30% Off Hot Spring Spa Entrance', ja: '温泉入浴料30%割引', zh: '出示Pass温泉泡汤享有7折优惠' }
+        }
+      ],
+      winter: [
+        {
+          id: 'yongpyong',
+          icon: '🎿',
+          name: { ko: '모나 용평 스키장 (Yongpyong Resort)', en: 'Mona Yongpyong Resort', ja: 'モナ龍平(ヨンピョン)スキー場', zh: '龙平滑雪度假村' },
+          loc: { ko: '강원도 평창군 대관령면 올림픽로 715', en: '715 Olympic-ro, Daegwalnyeong-myeon, Pyeongchang', ja: '江原道平昌郡大関嶺面オリンピック路715', zh: '江原道平昌郡大关岭面奥运路715' },
+          desc: {
+            ko: '대한민국 대표 설원의 대관령 파우더 스노보드 스팟. 올림픽 슬로프 보유.',
+            en: 'Korea’s premier snow resort with Olympic powder slopes and scenic cable car views.',
+            ja: '韓国を代表する銀世界。オリンピックスロープを完備。',
+            zh: '韩国最具代表性的雪原，拥有奥运会级别滑道。'
+          },
+          price: { ko: '리프트 주간권 82,000원', en: 'Lift Day Pass: ₩82,000', ja: 'リフト1日券 82,000ウォン', zh: '缆车日票 82,000韩元' },
+          hours: { ko: '08:30 - 22:00', en: '08:30 - 22:00', ja: '08:30 - 22:00', zh: '08:30 - 22:00' },
+          benefit: { ko: '리프트권 & 장비 대여 35% 할인', en: '35% Off Lift Ticket & Full Gear Rental', ja: 'リフト券＆レンタル35%割引', zh: '出示Pass享缆车票与装备租赁6.5折' }
+        },
+        {
+          id: 'alpensia',
+          icon: '⛷️',
+          name: { ko: '알펜시아 리조트 (Alpensia Ski)', en: 'Alpensia Resort', ja: 'アルペンシアリゾート', zh: '阿尔卑西亚滑雪场' },
+          loc: { ko: '강원도 평창군 대관령면 솔봉로 325', en: '325 Solbong-ro, Daegwalnyeong-myeon', ja: '江原道平昌郡大関嶺面ソルボン路325', zh: '江原道平昌郡大关岭面松峰路325' },
+          desc: {
+            ko: '평창 동계올림픽 전용 슬로프와 스키 점프대가 시원하게 바라보이는 프리미엄 리조트.',
+            en: 'Premium resort with winter olympic slopes and ski jump observatory views.',
+            ja: 'オリンピックの競技会場。スキージャンプ台の絶景観覧が可能。',
+            zh: '冬奥会赛事场地，可俯瞰震撼的跳台滑雪塔全景。'
+          },
+          price: { ko: '리프트 반일권 55,000원', en: 'Half-day Lift: ₩55,000', ja: 'リフト半日券 55,000ウォン', zh: '半天缆车票 55,000韩元' },
+          hours: { ko: '09:00 - 21:30', en: '09:00 - 21:30', ja: '09:00 - 21:30', zh: '09:00 - 21:30' },
+          benefit: { ko: '알펜시아 렌탈샵 보드/의류 40% 할인', en: '40% Off Board & Wear Rental', ja: 'ボード＆ウェア40%割引', zh: '雪板及雪服租赁享6折优惠' }
+        },
+        {
+          id: 'high1',
+          icon: '🏂',
+          name: { ko: '하이원 리조트 (High1 Ski)', en: 'High1 Ski Resort', ja: 'ハイワンスキーリゾート', zh: 'High1滑雪度假村' },
+          loc: { ko: '강원도 정선군 고한읍 하이원길 424', en: '424 High1-gil, Gohan-eup, Jeongseon-gun', ja: '江原道旌善郡古汗邑ハイワン路424', zh: '江原道旌善郡古汗邑High1路424' },
+          desc: {
+            ko: '최고급 곤돌라 시스템과 4.2km 초보자 전용 롱 슬로프를 갖춘 청정 설원 스키장.',
+            en: 'High-end gondola system with a 4.2km long slope ideal for beginners and families.',
+            ja: '最高級ゴンドラと4.2kmの初心者専用ロングスロープを完備。',
+            zh: '配备高端缆车系统及4.2公里初学者超长雪道。'
+          },
+          price: { ko: '리프트 5시간권 69,000원', en: '5-Hour Lift Pass: ₩69,000', ja: 'リフト5時間券 69,000ウォン', zh: '5小时缆车票 69,000韩元' },
+          hours: { ko: '09:00 - 22:00', en: '09:00 - 22:00', ja: '09:00 - 22:00', zh: '09:00 - 22:00' },
+          benefit: { ko: '파라타 셔틀 무료 이용 & 스키 팩 30% 할인', en: 'Free Shuttle & 30% Off Ski Package', ja: '無料シャトル＆30%割引', zh: '免费搭乘专线班车及滑雪套餐7折' }
+        },
+        {
+          id: 'sokcho_market',
+          icon: '🦐',
+          name: { ko: '속초 관광수산시장 (Sokcho Market)', en: 'Sokcho Central Tourist Market', ja: '束草(ソチョ)観光水産市場', zh: '束草观光水产市场' },
+          loc: { ko: '강원도 속초시 중앙로147번길 16', en: '16 Jungang-ro 147beon-gil, Sokcho', ja: '江原道束草市中央路147番路16', zh: '江原道束草市中央路147番路16' },
+          desc: {
+            ko: '겨울 양양/속초 여행 필수! 만석닭강정, 아바이순대, 홍게 튀김이 만개한 대표 전통시장.',
+            en: 'Famous winter seafood market with fried chicken, squid sundae & red crab.',
+            ja: '名物のタッカンジョン、イカスンデ、紅ズワイガニを楽しめる大人気市場。',
+            zh: '著名的海鲜与小吃传统市场，以辣味炸鸡块、乌贼米肠及红蟹闻名。'
+          },
+          price: { ko: '먹거리 10,000원 ~ 30,000원', en: 'Food: ₩10,000 - ₩30,000', ja: 'グルメ 10,000〜30,000ウォン', zh: '小吃美食 10,000 ~ 30,000韩元' },
+          hours: { ko: '08:00 - 24:00', en: '08:00 - 24:00', ja: '08:00 - 24:00', zh: '08:00 - 24:00' },
+          benefit: { ko: '시장 내 제휴 맛집 10% 할인 & 핫팩 무료 증정', en: '10% Off Foods & Free Hand Warmer', ja: '提携店舗10%割引＆カイロ無料プレゼント', zh: '合作名店享9折优惠并免费获赠暖宝宝' }
+        },
+        {
+          id: 'phoenix',
+          icon: '🏔️',
+          name: { ko: '휘닉스 파크 평창 (Phoenix Park)', en: 'Phoenix Park Pyeongchang', ja: 'フェニックスパーク平昌', zh: '凤凰平昌滑雪场' },
+          loc: { ko: '강원도 평창군 봉평면 태기로 174', en: '174 Taegi-ro, Bongpyeong-myeon', ja: '江原道平昌郡蓬坪面泰岐路174', zh: '江原道平昌郡蓬坪面泰岐路174' },
+          desc: {
+            ko: '동계올림픽 스노보드 경기장. 극강의 파우더 눈질과 익스트림 파크 완비.',
+            en: 'Olympic snowboard venue with extreme terrain parks & top powder snow.',
+            ja: 'スノーボードの聖地。高品質のパウダースノーとパーク完備。',
+            zh: '奥运单板滑雪主赛场，拥有极佳的粉雪质感与极限地形公园。'
+          },
+          price: { ko: '올인데이 패스 89,000원', en: 'All-Day Pass: ₩89,000', ja: 'オールインワンパス 89,000ウォン', zh: '全天通票 89,000韩元' },
+          hours: { ko: '09:00 - 22:00', en: '09:00 - 22:00', ja: '09:00 - 22:00', zh: '09:00 - 22:00' },
+          benefit: { ko: '스노보드 프리미엄 장비 렌탈 35% 할인', en: '35% Off Premium Snowboard Rental', ja: 'スノーボードプレミアムレンタル35%割引', zh: '高端单板装备租赁享6.5折优惠' }
+        },
+        {
+          id: 'vivaldi',
+          icon: '🛷',
+          name: { ko: '비발디파크 스노위랜드 (Snowyland)', en: 'Vivaldi Snowyland & Ski', ja: 'ビバルディスノーウィーランド', zh: '维瓦尔第冰雪乐园' },
+          loc: { ko: '강원도 홍천군 서면 한치골길 262', en: '262 Hanchigol-gil, Hongcheon', ja: '江原道洪川郡西面ハンチゴル路262', zh: '江原道洪川郡西面寒峙谷路262' },
+          desc: {
+            ko: '눈썰매, 눈조각 공원, 야간 스키까지 가족/연인이 함께 즐기는 강원 최대 눈 테마파크.',
+            en: 'Huge winter snow sledding theme park & night skiing slopes for all ages.',
+            ja: 'ソリ遊び、雪の彫刻、夜間スキーが楽しめる大型スノーテーマパーク。',
+            zh: '包含雪橇、雪雕公园及夜间滑雪的大型冬季冰雪主题乐园。'
+          },
+          price: { ko: '스노위랜드 입장권 43,000원', en: 'Snowyland Pass: ₩43,000', ja: '入場券 43,000ウォン', zh: '冰雪乐园门票 43,000韩元' },
+          hours: { ko: '10:00 - 21:00', en: '10:00 - 21:00', ja: '10:00 - 21:00', zh: '10:00 - 21:00' },
+          benefit: { ko: '스노위랜드 입장권 1+1 혜택 (동반 1인 무료)', en: 'Buy 1 Get 1 Free Snowyland Ticket', ja: '入場チケット 1+1 (同伴1名無料)', zh: '冰雪乐园门票买一送一 (同行1人免费)' }
+        },
+        {
+          id: 'solbeach_spa',
+          icon: '🧖‍♀️',
+          name: { ko: '쏠비치 양양 해수 온천 스파', en: 'Sol Beach Sea Water Spa', ja: 'ソルビーチ襄陽海水スパ', zh: 'Sol Beach 襄阳海水温泉Spa' },
+          loc: { ko: '강원도 양양군 손양면 선사유적로 678', en: '678 Seonsayujeok-ro, Sonyang-myeon', ja: '江原道襄陽郡巽陽面先史遺跡路678', zh: '江原道襄阳郡巽阳面先史遗迹路678' },
+          desc: {
+            ko: '겨울 동해 파도를 보며 야외에서 즐기는 동해 해수 찜질 & 온천 웰니스 스파.',
+            en: 'Outdoor oceanfront thermal seawater spa with panoramic winter sea view.',
+            ja: '冬の海を眺めながら楽しむ屋外海水温泉スパ。',
+            zh: '面朝冬季大海的户外深层海水温泉与汗蒸康养Spa。'
+          },
+          price: { ko: '사우나/스파 22,000원', en: 'Spa Entry: ₩22,000', ja: 'スパ入浴 22,000ウォン', zh: 'Spa泡汤 22,000韩元' },
+          hours: { ko: '07:00 - 20:00', en: '07:00 - 20:00', ja: '07:00 - 20:00', zh: '07:00 - 20:00' },
+          benefit: { ko: '파라타 탑승권 제시 시 해수 스파 40% 즉시 할인', en: '40% Instant Discount on Seawater Spa', ja: '搭乗券提示でスパ40%即時割引', zh: '出示登机牌即享海水Spa 6折优惠' }
+        }
+      ]
+    };
+
+    // Coupons Data
+    const couponsData = [
+      {
+        type: 'PASS',
+        color: 'amber',
+        title: { ko: '서핑 수트 & 보드 1일 무상 대여권', en: '1-Day Free Surfsuit & Board Rental', ja: 'サーフィンスーツ＆ボード1日無料券', zh: '冲浪防寒服与冲浪板1天免费体验券' },
+        desc: { ko: '죽도/서피비치 제휴 샵에서 제시 시 장비 무료 대여', en: 'Present at Jugdo/Surfyy Beach partner shops for free gear', ja: '竹島/サーフィービーチ提携店で提示時用具無料', zh: '在竹岛/Surffy海滩合作店家出示即可免费租用' },
+        partner: { ko: '양양 서핑 협회 제휴', en: 'Yangyang Surf Association', ja: '襄陽サーフィン協会', zh: '襄阳冲浪协会合作' },
+        code: 'YNG-SURF-FREE'
+      },
+      {
+        cat: 'AIRLINE',
+        color: 'blue',
+        type: 'PARATA',
+        title: { ko: '파라타항공 사전 좌석 지정 & 우선 탑승', en: 'Parata Air Advance Seat & Priority Boarding', ja: 'パラタ航空事前座席指定＆優先搭乗', zh: 'Parata Air 提前选座与优先登机' },
+        desc: { ko: '양양 노선 비행기 탑승 시 VIP 라인 우대 혜택', en: 'VIP line priority on Yangyang routes', ja: '襄陽路線利用時のVIP優先特典', zh: '搭乘襄阳航线享受VIP通道优先权' },
+        partner: { ko: '파라타항공 공식 혜택', en: 'Parata Air Official', ja: 'パラタ航空公式', zh: 'Parata Air 官方权益' },
+        code: 'PRT-VIP-SEAT'
+      },
+      {
+        type: 'WINTER',
+        color: 'cyan',
+        title: { ko: '강원 주요 스키장 리프트 35% 할인권', en: '35% Off Gangwon Ski Lift Pass', ja: '江原主要スキー場リフト35%割引券', zh: '江原道主要滑雪场缆车票6.5折券' },
+        desc: { ko: '용평/알펜시아/하이원 리조트 현장 결제 시 사용', en: 'Valid at Yongpyong, Alpensia, High1 Resorts', ja: '龍平/アルペンシア/ハイワンリゾートで利用可能', zh: '适用于龙平/阿尔卑西亚/High1度假村' },
+        partner: { ko: '강원 스노우 리조트 연합', en: 'Gangwon Snow Resorts Alliance', ja: '江原スノーリゾート連合', zh: '江原道雪场联盟' },
+        code: 'GW-SKI-35OFF'
+      },
+      {
+        type: 'LOCAL',
+        color: 'emerald',
+        title: { ko: '양양 로컬 카페 무료 음료 1잔 교환권', en: 'Free Local Cafe Drink Voucher', ja: '襄陽ローカルカフェ無料ドリンク1杯券', zh: '襄阳当地咖啡馆免费饮品1杯兑换券' },
+        desc: { ko: '양양 전통시장 및 서퍼 스트릿 제휴 카페 교환 가능', en: 'Valid at traditional market & surfer street cafes', ja: '伝統市場およびサーファー通り提携カフェで交換可能', zh: '可在传统市场及冲浪街合作咖啡馆兑换' },
+        partner: { ko: '양양 소상공인 연합', en: 'Yangyang Merchant Assoc.', ja: '襄陽小商工連合', zh: '襄阳小微商家联合' },
+        code: 'YYG-CAFE-FREE'
+      }
+    ];
+
+    // Travel Guide Data
+    const travelItemsData = [
+      {
+        cat: 'car',
+        title: { ko: '파라타 양양공항 셔틀 버스', en: 'Parata Airport Express Shuttle', ja: 'パラタ襄陽空港シャトルバス', zh: 'Parata 襄阳机场直达班车' },
+        desc: { ko: '양양공항 ↔ 서피비치/죽도/속초/평창 주요 스키장 연결 무상 셔틀', en: 'Free shuttle connecting Yangyang Airport to Surfyy Beach, Sokcho & Ski Resorts', ja: '空港からサーフィービーチ、束草、スキー場を結ぶ無料シャトル', zh: '连接襄阳机场至Surffy海滩、束草及各大滑雪场的免费班车' },
+        tag: 'BUS / SHUTTLE',
+        badge: 'FREE SHUTTLE'
+      },
+      {
+        cat: 'car',
+        title: { ko: '양양 렌트카 EV (SK렌터카/SOCAR)', en: 'Yangyang Airport EV Rental', ja: '襄陽空港EVレンタカー', zh: '襄阳机场电动车租车' },
+        desc: { ko: '양양공항 인수/반납 전용 친환경 EV 렌트카 20% 할인', en: '20% off EV rental picked up directly at Yangyang Airport', ja: '襄陽空港受取・返却専用EVレンタカー20%割引', zh: '襄阳机场取还纯电动车租车8折优惠' },
+        tag: 'CAR RENTAL',
+        badge: '20% OFF'
+      },
+      {
+        cat: 'stay',
+        title: { ko: '쏠비치 양양 리조트 & 오션스파', en: 'Sol Beach Yangyang Resort', ja: 'ソルビーチ襄陽リゾート', zh: 'Sol Beach 襄阳度假村' },
+        desc: { ko: '스페인풍 해변 리조트 및 동해 안 해수 스파 패키지', en: 'Spanish style beach resort & East Sea ocean spa package', ja: 'スペイン風ビーチリゾート＆海洋深層水スパ', zh: '西班牙风情海滨度假村与海水Spa套餐' },
+        tag: 'RESORT',
+        badge: 'VIP 15%'
+      },
+      {
+        cat: 'stay',
+        title: { ko: '서피 스테이 & 샌드 게스트하우스', en: 'Surfyy Stay & Sand House', ja: 'サーフィーステイ＆ゲストハウス', zh: 'Surffy Stay 冲浪民宿' },
+        desc: { ko: '서퍼들과 교류하는 감성 게스트하우스 & 야간 비치 BBQ', en: 'Vibrant surfers guesthouse with nightly beach BBQ party', ja: 'サーファーが集う感性ゲストハウス＆BBQ', zh: '冲浪爱好者聚集地，含夜间海滩烧烤派对' },
+        tag: 'GUESTHOUSE',
+        badge: '웰컴드링크'
+      },
+      {
+        cat: 'food',
+        title: { ko: '양양 연어 요리 & 송이 전골 로컬 전문점', en: 'Yangyang Salmon & Songi Hotpot', ja: '襄陽サケ料理＆松茸鍋', zh: '襄阳三文鱼与松茸火锅' },
+        desc: { ko: '양양 남대천 생연어 구이와 명품 양양 송이버섯 요리', en: 'Fresh Namdaecheon salmon & premium Songi mushroom hotpot', ja: '新鮮なサケ焼きと名物松茸鍋の専門店', zh: '新鲜南大川三文鱼与野生松茸火锅名店' },
+        tag: 'LOCAL FOOD',
+        badge: '10% DISCOUNT'
+      },
+      {
+        cat: 'food',
+        title: { ko: '파머스키친 (Farmers Kitchen)', en: 'Farmers Kitchen Burger', ja: 'ファーマーズキッチン(ハンバーガー)', zh: 'Farmers Kitchen 手工汉堡' },
+        desc: { ko: '양양 서퍼들의 필수 코스! 수제 아보카도 버거 맛집', en: 'Must-visit handcrafted avocado burger joint for surfers', ja: 'サーファー御用達！手作りアボカドバーガーの名店', zh: '冲浪者必吃，招牌手工牛油果汉堡美食店' },
+        tag: 'FOOD & PUB',
+        badge: '무료 감자튀김'
+      },
+      {
+        cat: 'food',
+        title: { ko: '속초 아바이마을 순대 & 냉면', en: 'Abai Village Sundae & Cold Noodles', ja: 'アバイ村のイカスンデ＆冷麺', zh: '阿拜村乌贼米肠与冷面' },
+        desc: { ko: '갯배 타고 건너가는 속초 아바이마을의 명물 오징어순대', en: 'Famous squid sundae and cold noodles in Abai Village', ja: '渡し船で渡る名物のイカスンデと冷麺の名店', zh: '乘坐人力渡船前往阿拜村必尝的乌贼米肠与冷面' },
+        tag: 'LOCAL GOURMET',
+        badge: '음료 1잔 서비스'
+      },
+      {
+        cat: 'market',
+        title: { ko: '양양전통시장 해키 팝업스토어', en: 'Haeki Mascot Pop-up Store', ja: 'ヘキポップアップストア(伝統市場)', zh: 'Haeki 吉祥物快闪店' },
+        desc: { ko: '해키 캐릭터 아크릴 키링, 리유저블 아쿠아백, 스티커 굿즈 판매', en: 'Official Haeki mascot acrylic keyrings, aqua bags & stickers', ja: '公式ヘキキーリング、アタッチバック、グッズ販売', zh: '售卖官方Haeki亚克力钥匙扣、水袋及周边贴纸' },
+        tag: 'POP-UP SHOP',
+        badge: '굿즈 증정'
+      },
+      {
+        cat: 'market',
+        title: { ko: '강원 감자빵 & 해산물 특산품 샵', en: 'Gangwon Potato Bread & Squid Goods', ja: '江原道ジャガイモパン＆特産品', zh: '江原道土豆面包与特产店' },
+        desc: { ko: '쫀득한 강원도 감자빵과 오징어 건어물 선물 세트', en: 'Chewy Gangwon potato bread & dried squid souvenir gift sets', ja: 'モチモチのジャガイモパンと乾燥スルメお土産セット', zh: 'Q弹江原道土豆面包与鱿鱼干伴手礼礼盒' },
+        tag: 'SOUVENIR',
+        badge: '10% OFF'
+      },
+      {
+        cat: 'culture',
+        title: { ko: '하조대 해변 일출 요가 & 웰니스', en: 'Hajodae Beach Sunrise Yoga', ja: '河趙台ビーチ日の出ヨガ', zh: '河赵台海滩日出瑜伽' },
+        desc: { ko: '동해의 울창한 소나무 숲과 바다가 만나는 해변 일출 요가 클래스', en: 'Sunrise yoga class on the beach surrounded by pine forests', ja: '松林と海が調和する日の出ヨガクラス', zh: '松林与大海交相辉映的日出海滩瑜伽课程' },
+        tag: 'WELLNESS',
+        badge: 'CLASS 50% OFF'
+      }
+    ];
+
+    // Auth & Verification Handlers
+    function switchAuthTab(tab) {
+      const pnrBtn = document.getElementById('btnTabPNR');
+      const qrBtn = document.getElementById('btnTabQR');
+      const pnrForm = document.getElementById('formPNR');
+      const qrForm = document.getElementById('formQR');
+
+      if (tab === 'pnr') {
+        pnrBtn.className = 'py-2 rounded-lg bg-white text-parata-blue shadow-sm transition';
+        qrBtn.className = 'py-2 rounded-lg text-slate-500 hover:text-slate-800 transition';
+        pnrForm.classList.remove('hidden');
+        qrForm.classList.add('hidden');
+      } else {
+        qrBtn.className = 'py-2 rounded-lg bg-white text-parata-blue shadow-sm transition';
+        pnrBtn.className = 'py-2 rounded-lg text-slate-500 hover:text-slate-800 transition';
+        qrForm.classList.remove('hidden');
+        pnrForm.classList.add('hidden');
+      }
+    }
+
+    function verifyPNR() {
+      const pnr = document.getElementById('inputPNR').value.trim();
+      const name = document.getElementById('inputName').value.trim();
+
+      if (!pnr || !name) {
+        showToast("⚠️ PNR 번호와 영문 성명을 입력해 주세요.");
+        return;
+      }
+
+      state.verified = true;
+      state.userName = name.toUpperCase();
+      document.getElementById('txtUserName').innerHTML = `${state.userName} <span class="bg-emerald-400 text-slate-900 text-[9px] px-1.5 py-0.2 rounded-full font-bold">VERIFIED</span>`;
+      document.getElementById('txtGuestNotice').innerText = "파라타항공 입국 인증 완료!";
+      
+      showToast("✈️ 파라타항공 입국 인증 완료! 웰컴 패스가 활성화되었습니다.");
+      setTimeout(() => {
+        navTo('map');
+      }, 800);
+    }
+
+    function simulateQRScan() {
+      verifyPNR();
+    }
+
+    // Language Selector Toggle & Switch
+    function toggleLangDropdown() {
+      document.getElementById('langDropdown').classList.toggle('hidden');
+    }
+
+    function changeLang(lang) {
+      state.lang = lang;
+      document.getElementById('currentLangLabel').innerText = lang.toUpperCase();
+      document.getElementById('langDropdown').classList.add('hidden');
+
+      const dict = i18n[lang];
+      document.getElementById('txtWelcomeTitle').innerText = dict.welcomeTitle;
+      document.getElementById('txtWelcomeDesc').innerText = dict.welcomeDesc;
+      if (!state.verified) document.getElementById('txtGuestNotice').innerText = dict.guestNotice;
+      document.getElementById('txtPassVerifyTitle').innerText = dict.passVerifyTitle;
+      document.getElementById('btnVerifyText').innerText = dict.btnVerifyText;
+      document.getElementById('txtScanPrompt').innerText = dict.scanPrompt;
+      document.getElementById('txtSummerTab').innerText = dict.summerTab;
+      document.getElementById('txtWinterTab').innerText = dict.winterTab;
+      document.getElementById('txtMascotStatus').innerText = dict.mascotStatus;
+      document.getElementById('btnGPSCheck').innerText = dict.btnGPSCheck;
+      document.getElementById('txtMapTitle').innerText = dict.mapTitle;
+      document.getElementById('txtStampCollectionTitle').innerText = dict.stampCollectionTitle;
+      document.getElementById('txtStampRewardNotice').innerText = dict.stampRewardNotice;
+      document.getElementById('txtRewardsBannerTitle').innerText = dict.rewardsBannerTitle;
+      document.getElementById('txtRewardsBannerSub').innerText = dict.rewardsBannerSub;
+      document.getElementById('txtViralTitle').innerText = dict.viralTitle;
+      document.getElementById('txtViralDesc').innerText = dict.viralDesc;
+      document.getElementById('txtGiftSelectTitle').innerText = dict.giftSelectTitle;
+      document.getElementById('txtGiftMealTitle').innerText = dict.giftMealTitle;
+      document.getElementById('txtGiftMealSub').innerText = dict.giftMealSub;
+      document.getElementById('txtGiftMealDesc').innerText = dict.giftMealDesc;
+      document.getElementById('txtGiftFastTitle').innerText = dict.giftFastTitle;
+      document.getElementById('txtGiftFastSub').innerText = dict.giftFastSub;
+      document.getElementById('txtGiftFastDesc').innerText = dict.giftFastDesc;
+      document.getElementById('btnCopyCode').innerText = dict.copyBtn;
+      document.getElementById('navTxtVerify').innerText = dict.navVerify;
+      document.getElementById('navTxtMap').innerText = dict.navMap;
+      document.getElementById('navTxtTravel').innerText = dict.navTravel;
+      document.getElementById('navTxtRewards').innerText = dict.navRewards;
+      document.getElementById('navTxtViral').innerText = dict.navViral;
+      document.getElementById('txtTravelBannerTitle').innerText = dict.travelBannerTitle;
+      document.getElementById('txtTravelBannerSub').innerText = dict.travelBannerSub;
+
+      renderMapMarkers();
+      renderStampBadges();
+      renderCoupons();
+      renderTravelGuide('all');
+    }
+
+    // Season Switcher & Map Renderers
+    function switchSeason(season) {
+      state.season = season;
+      const summerBtn = document.getElementById('btnSeasonSummer');
+      const winterBtn = document.getElementById('btnSeasonWinter');
+
+      if (season === 'summer') {
+        summerBtn.className = 'flex-1 py-2.5 rounded-xl font-extrabold text-xs flex items-center justify-center gap-2 bg-gradient-to-r from-blue-500 to-cyan-500 text-white shadow-sm transition';
+        winterBtn.className = 'flex-1 py-2.5 rounded-xl font-bold text-xs flex items-center justify-center gap-2 text-slate-500 hover:text-slate-800 transition';
+        document.getElementById('mascotSeasonEmoji').innerText = '🏄‍♂️';
+      } else {
+        winterBtn.className = 'flex-1 py-2.5 rounded-xl font-extrabold text-xs flex items-center justify-center gap-2 bg-gradient-to-r from-indigo-600 to-blue-700 text-white shadow-sm transition';
+        summerBtn.className = 'flex-1 py-2.5 rounded-xl font-bold text-xs flex items-center justify-center gap-2 text-slate-500 hover:text-slate-800 transition';
+        document.getElementById('mascotSeasonEmoji').innerText = '🎿';
+      }
+
+      renderMapMarkers();
+      renderStampBadges();
+    }
+
+    function renderMapMarkers() {
+      const container = document.getElementById('mapMarkersContainer');
+      container.innerHTML = '';
+      const spots = spotsData[state.season];
+      const lang = state.lang;
+
+      spots.forEach(spot => {
+        const name = spot.name[lang] || spot.name['ko'];
+        const isCollected = !!state.stamps[spot.id];
+
+        const item = document.createElement('div');
+        item.className = 'flex items-center justify-between p-2 rounded-xl bg-slate-800/80 border border-slate-700 hover:border-blue-400 cursor-pointer transition';
+        item.onclick = () => openSpotModal(spot.id);
+
+        item.innerHTML = `
+          <div class="flex items-center gap-2.5">
+            <span class="text-xl">${spot.icon}</span>
+            <div>
+              <div class="font-bold text-xs text-slate-100 flex items-center gap-1.5">
+                ${name}
+                ${isCollected ? '<span class="bg-emerald-500 text-slate-950 text-[9px] px-1.5 py-0.2 rounded-full font-black">STAMPED</span>' : ''}
+              </div>
+              <div class="text-[10px] text-slate-400 truncate max-w-[190px]">${spot.loc[lang] || spot.loc['ko']}</div>
+            </div>
+          </div>
+          <button class="px-2 py-1 ${isCollected ? 'bg-slate-700 text-emerald-400' : 'bg-parata-blue text-white'} text-[10px] font-bold rounded-lg flex items-center gap-1">
+            <i class="fa-solid fa-circle-info"></i> 상세
+          </button>
+        `;
+        container.appendChild(item);
+      });
+    }
+
+    function renderStampBadges() {
+      const container = document.getElementById('stampBadgesGrid');
+      container.innerHTML = '';
+      const spots = spotsData[state.season];
+      const lang = state.lang;
+
+      spots.forEach(spot => {
+        const isCollected = !!state.stamps[spot.id];
+        const name = spot.name[lang] || spot.name['ko'];
+
+        const badge = document.createElement('div');
+        badge.className = `p-2.5 rounded-2xl border text-center flex flex-col items-center justify-center cursor-pointer stamp-badge ${isCollected ? 'bg-amber-50 border-amber-300 text-slate-900 collected shadow-sm' : 'bg-white border-slate-200 text-slate-400 opacity-60'}`;
+        badge.onclick = () => openSpotModal(spot.id);
+
+        badge.innerHTML = `
+          <div class="text-2xl mb-1">${isCollected ? '🏷️' : spot.icon}</div>
+          <div class="text-[10px] font-extrabold truncate w-full">${name.split(' ')[0]}</div>
+          <div class="text-[9px] ${isCollected ? 'text-amber-600 font-bold' : 'text-slate-400'} mt-0.5">
+            ${isCollected ? '적립 완료' : '미적립'}
+          </div>
+        `;
+        container.appendChild(badge);
+      });
+
+      // Update Header Count
+      const totalCollected = Object.keys(state.stamps).length;
+      document.getElementById('stampCount').innerText = totalCollected;
+    }
+
+    // Modal Spot Detail Handlers
+    function openSpotModal(spotId) {
+      state.activeSpotId = spotId;
+      const spots = [...spotsData.summer, ...spotsData.winter];
+      const spot = spots.find(s => s.id === spotId);
+      if (!spot) return;
+
+      const lang = state.lang;
+      document.getElementById('spotModalIcon').innerText = spot.icon;
+      document.getElementById('spotModalName').innerText = spot.name[lang] || spot.name['ko'];
+      document.getElementById('spotModalLoc').innerText = spot.loc[lang] || spot.loc['ko'];
+      document.getElementById('spotModalDesc').innerText = spot.desc[lang] || spot.desc['ko'];
+      document.getElementById('spotModalPrice').innerText = spot.price[lang] || spot.price['ko'];
+      document.getElementById('spotModalHours').innerText = spot.hours[lang] || spot.hours['ko'];
+      document.getElementById('spotModalBenefit').innerText = spot.benefit[lang] || spot.benefit['ko'];
+
+      const claimBtn = document.getElementById('btnSpotClaim');
+      if (state.stamps[spotId]) {
+        claimBtn.innerHTML = '<i class="fa-solid fa-check"></i> <span>스탬프 적립 완료</span>';
+        claimBtn.className = 'w-full py-2.5 bg-slate-300 text-slate-600 font-bold text-xs rounded-xl cursor-default';
+      } else {
+        claimBtn.innerHTML = '<i class="fa-solid fa-stamp"></i> <span>이 위치에서 스탬프 찍기</span>';
+        claimBtn.className = 'w-full py-2.5 bg-parata-blue text-white font-bold text-xs rounded-xl hover:bg-parata-darkBlue active:scale-95 transition flex items-center justify-center gap-1.5 shadow';
+      }
+
+      document.getElementById('spotDetailModal').classList.remove('hidden');
+    }
+
+    function closeSpotModal() {
+      document.getElementById('spotDetailModal').classList.add('hidden');
+    }
+
+    function claimCurrentSpotStamp() {
+      if (!state.activeSpotId) return;
+      if (state.stamps[state.activeSpotId]) return;
+
+      state.stamps[state.activeSpotId] = true;
+      renderMapMarkers();
+      renderStampBadges();
+      closeSpotModal();
+      showToast("🎉 스탬프 적립 완료! 마일리지 혜택에 한 걸음 더 다가갔습니다.");
+    }
+
+    function triggerQuickCheckin() {
+      const currentSpots = spotsData[state.season];
+      const uncollected = currentSpots.find(s => !state.stamps[s.id]);
+      if (uncollected) {
+        openSpotModal(uncollected.id);
+      } else {
+        showToast("📍 현재 시즌의 모든 스탬프를 이미 수집하셨습니다!");
+      }
+    }
+
+    // Render Travel Guide Items with Filter Categories
+    function renderTravelGuide(filterCat) {
+      const container = document.getElementById('travelListContainer');
+      container.innerHTML = '';
+      const lang = state.lang;
+
+      const filtered = filterCat === 'all' ? travelItemsData : travelItemsData.filter(item => item.cat === filterCat);
+
+      filtered.forEach(item => {
+        const title = item.title[lang] || item.title['ko'];
+        const desc = item.desc[lang] || item.desc['ko'];
+
+        const el = document.createElement('div');
+        el.className = 'bg-white rounded-2xl p-4 shadow-sm border border-slate-100 flex flex-col justify-between';
+        el.innerHTML = `
+          <div>
+            <div class="flex items-center justify-between mb-1">
+              <span class="bg-blue-50 text-parata-blue text-[10px] font-extrabold px-2 py-0.5 rounded-md uppercase">${item.tag}</span>
+              <span class="bg-amber-100 text-yangyang-orange text-[10px] font-bold px-2 py-0.5 rounded-md">${item.badge}</span>
+            </div>
+            <h3 class="text-xs font-extrabold text-slate-900 mt-1">${title}</h3>
+            <p class="text-[11px] text-slate-500 mt-0.5">${desc}</p>
+          </div>
+          <div class="mt-3 pt-2 border-t border-slate-100 flex items-center justify-between">
+            <span class="text-[10px] text-slate-400 font-semibold">양양 파라타 전용 제휴</span>
+            <button onclick="showToast('상세 제휴 혜택 및 예약 페이지로 연결됩니다')" class="px-3 py-1 bg-slate-800 text-white font-bold text-[10px] rounded-lg hover:bg-slate-900 transition">
+              예약 / 혜택보기
+            </button>
+          </div>
+        `;
+        container.appendChild(el);
+      });
+    }
+
+    function filterTravel(cat) {
+      ['all', 'car', 'stay', 'food', 'market', 'culture'].forEach(c => {
+        const btn = document.getElementById(`travelCat-${c}`);
+        if (btn) {
+          if (c === cat) {
+            btn.className = 'py-2 bg-parata-blue text-white rounded-xl shadow-sm transition font-bold';
+          } else {
+            btn.className = 'py-2 bg-white text-slate-600 rounded-xl border border-slate-200 hover:bg-slate-50 transition font-semibold';
+          }
+        }
+      });
+      renderTravelGuide(cat);
+    }
+
+    // Render Coupons Box
+    function renderCoupons() {
+      const container = document.getElementById('couponsListContainer');
+      container.innerHTML = '';
+      const lang = state.lang;
+      const dict = i18n[lang];
+
+      couponsData.forEach(c => {
+        const title = c.title[lang] || c.title['ko'];
+        const desc = c.desc[lang] || c.desc['ko'];
+        const partner = c.partner[lang] || c.partner['ko'];
+
+        const card = document.createElement('div');
+        card.className = 'bg-white rounded-2xl p-4 shadow-md border border-slate-100 flex flex-col justify-between relative overflow-hidden';
+        card.innerHTML = `
+          <div>
+            <div class="flex items-center gap-2 mb-1">
+              <span class="bg-${c.color}-100 text-${c.color}-800 text-[10px] font-extrabold px-2 py-0.5 rounded-md uppercase">${c.type}</span>
+              <span class="text-[10px] text-slate-400 font-semibold">유효기간: 2030.12.31</span>
+            </div>
+            <h3 class="text-xs font-extrabold text-slate-900">${title}</h3>
+            <p class="text-[11px] text-slate-500 mt-0.5">${desc}</p>
+          </div>
+          <div class="mt-3 pt-3 border-t border-dashed border-slate-200 flex items-center justify-between">
+            <span class="text-[10px] font-bold text-parata-blue">${partner}</span>
+            <button onclick="openQRModal('${title}', '${c.code}')" class="px-3 py-1.5 bg-parata-blue text-white font-bold text-xs rounded-xl shadow hover:bg-parata-darkBlue active:scale-95 transition flex items-center gap-1">
+              <i class="fa-solid fa-qrcode"></i> <span>${dict.showQR}</span>
+            </button>
+          </div>
+        `;
+        container.appendChild(card);
+      });
+    }
+
+    // Gift Selection in MGM Page
+    function selectGiftOption(option) {
+      state.selectedGift = option;
+      const mealBox = document.getElementById('giftOpt-meal');
+      const fastBox = document.getElementById('giftOpt-fasttrack');
+
+      if (option === 'meal') {
+        mealBox.className = 'bg-white p-3 rounded-2xl border-2 border-parata-blue shadow-sm flex flex-col justify-between cursor-pointer';
+        fastBox.className = 'bg-white p-3 rounded-2xl border border-slate-200 shadow-sm flex flex-col justify-between cursor-pointer hover:border-parata-blue';
+        showToast("선택: 강원도 특산물 기내식 무료 제공권");
+      } else {
+        fastBox.className = 'bg-white p-3 rounded-2xl border-2 border-parata-blue shadow-sm flex flex-col justify-between cursor-pointer';
+        mealBox.className = 'bg-white p-3 rounded-2xl border border-slate-200 shadow-sm flex flex-col justify-between cursor-pointer hover:border-parata-blue';
+        showToast("선택: 양양공항 패스트트랙 입출국 심사권");
+      }
+    }
+
+    // Bottom Navigation Logic
+    function navTo(screenId) {
+      const screens = ['verify', 'map', 'travel', 'rewards', 'viral'];
+      screens.forEach(s => {
+        document.getElementById(`screen-${s}`).classList.add('hidden');
+        const navBtn = document.getElementById(`nav-${s}`);
+        if (navBtn) navBtn.className = 'flex flex-col items-center gap-0.5 text-slate-400 hover:text-slate-700 transition';
+      });
+
+      document.getElementById(`screen-${screenId}`).classList.remove('hidden');
+      const activeBtn = document.getElementById(`nav-${screenId}`);
+      if (activeBtn) activeBtn.className = 'flex flex-col items-center gap-0.5 text-parata-blue font-bold transition';
+      state.currentTab = screenId;
+    }
+
+    // Modal QR Handler
+    function openQRModal(title, code) {
+      document.getElementById('modalCouponTitle').innerText = title;
+      document.getElementById('modalCouponCode').innerText = code;
+      document.getElementById('qrModal').classList.remove('hidden');
+    }
+
+    function closeQRModal() {
+      document.getElementById('qrModal').classList.add('hidden');
+    }
+
+    // Copy Invite Link
+    function copyInviteLink() {
+      const input = document.getElementById('inviteCodeInput');
+      input.select();
+      document.execCommand('copy');
+      showToast("📋 초대 링크가 클립보드에 복사되었습니다!");
+    }
+
+    function shareSocial(type) {
+      const giftName = state.selectedGift === 'meal' ? '강원 특산물 기내식' : '양양공항 패스트트랙 Pass';
+      showToast(`[${type.toUpperCase()}] 친구에게 '${giftName}' 선물 초대장이 전송되었습니다.`);
+    }
+
+    // Toast Notification
+    function showToast(msg) {
+      const toast = document.getElementById('toast');
+      document.getElementById('toastMsg').innerText = msg;
+      toast.classList.remove('hidden');
+      setTimeout(() => {
+        toast.classList.add('hidden');
+      }, 2500);
+    }
+
+    // Page Load Initialization
+    window.onload = function() {
+      renderMapMarkers();
+      renderStampBadges();
+      renderCoupons();
+      renderTravelGuide('all');
+    };
+  </script>
+</body>
+</html>
